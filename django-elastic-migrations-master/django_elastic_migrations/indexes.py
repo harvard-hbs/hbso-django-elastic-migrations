@@ -7,7 +7,12 @@ import django
 from django.db import ProgrammingError
 from elasticsearch import TransportError
 from elasticsearch.helpers import expand_action, bulk
-from elasticsearch_dsl import Index as ESIndex, DocType as ESDocType, Q as ESQ, Search
+from elasticsearch_dsl import Index as ESIndex, Q as ESQ, Search
+try:
+    from elasticsearch_dsl import DocType as ESDocType
+except ImportError:
+    # elasticsearch-dsl >= 7.0 replaced DocType with Document
+    from elasticsearch_dsl import Document as ESDocType
 
 from django_elastic_migrations import es_client, environment_prefix, es_test_prefix, dem_index_paths, get_logger, codebase_id
 from django_elastic_migrations.exceptions import DEMIndexNotFound, DEMDocTypeRequiresGetReindexIterator, \
