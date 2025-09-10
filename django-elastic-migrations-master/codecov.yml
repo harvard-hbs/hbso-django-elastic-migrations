@@ -1,0 +1,13 @@
+coverage:
+  round: nearest
+  range: 0..100
+
+  status:
+    project: yes
+    patch:
+      default:
+        enabled: no
+    changes: no
+
+  ignore:
+    - "tests/*.py"
