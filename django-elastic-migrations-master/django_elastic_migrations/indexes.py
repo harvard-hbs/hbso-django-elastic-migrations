@@ -890,7 +890,13 @@ class DEMIndex(ESIndex):
             if active_version_name and self.__doc_type._doc_type:
                 self.__doc_type._doc_type.index = active_version_name
 
-            return super(DEMIndex, self).doc_type(doc_type)
+            # In elasticsearch-dsl 7.x+, Index class doesn't have doc_type method
+            # So we handle the doc_type association directly
+            if hasattr(super(DEMIndex, self), 'doc_type'):
+                return super(DEMIndex, self).doc_type(doc_type)
+            else:
+                # For elasticsearch-dsl 7.x+, we manage the doc_type association ourselves
+                return self.__doc_type
         else:
             if self.get_version_id() and not self.__doc_type:
                 version_model = self.get_version_model()
@@ -898,7 +904,14 @@ class DEMIndex(ESIndex):
                 doc_type = self.__base_dem_index.doc_type()
                 doc_type_index_backup = doc_type._doc_type.index
                 doc_type._doc_type.index = version_model.name
-                self.__doc_type = super(DEMIndex, self).doc_type(doc_type)
+                
+                # In elasticsearch-dsl 7.x+, Index class doesn't have doc_type method
+                if hasattr(super(DEMIndex, self), 'doc_type'):
+                    self.__doc_type = super(DEMIndex, self).doc_type(doc_type)
+                else:
+                    # For elasticsearch-dsl 7.x+, we manage the doc_type association ourselves
+                    self.__doc_type = doc_type
+                    
                 if not self.hash_matches(version_model.json_md5):
                     doc_type._doc_type.index = doc_type_index_backup
                     our_hash, our_json = self.get_index_hash_and_json()
