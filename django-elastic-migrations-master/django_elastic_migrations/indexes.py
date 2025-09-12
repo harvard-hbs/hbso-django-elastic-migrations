@@ -503,8 +503,10 @@ class DEMDocType(ESDocType):
 
     """
     The name of the id attribute on the indexing model. Override in subclass to change.
+    Changed from 'id' to 'pk' to use Django's primary key instead of custom id fields.
+    This ensures Elasticsearch gets numeric document IDs for proper indexing.
     """
-    PK_ATTRIBUTE = 'id'
+    PK_ATTRIBUTE = 'pk'
 
     """
     The maximum number of times to retry an update of a set of documents
